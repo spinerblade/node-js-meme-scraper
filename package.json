@@ -24,8 +24,5 @@
     "eslint-config-upleveled": "^10.0.3",
     "prettier": "^3.9.6",
     "typescript": "6.0.3"
-  },
-  "dependencies": {
-    "node-fetch": "^3.3.2"
   }
 }

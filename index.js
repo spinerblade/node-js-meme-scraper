@@ -23,8 +23,8 @@ async function getMemes() {
     const responseMeme = await fetch(allMatches[i][1]); // download image at URL
     const arrayBuffer = await responseMeme.arrayBuffer(); // convert to array buffer
     const buffer = Buffer.from(arrayBuffer); // convert to buffer
-    let indexString = (i + 1).toString().padStart(2, '0'); // convert index to name for .jpg (e.g. 01.jpg)
-    let path = `./memes/${indexString}.jpg`;
+    const indexString = (i + 1).toString().padStart(2, '0'); // convert index to name for .jpg (e.g. 01.jpg)
+    const path = `./memes/${indexString}.jpg`;
     await fs.promises.writeFile(path, buffer); // save each image into folder "memes"
   }
 }
