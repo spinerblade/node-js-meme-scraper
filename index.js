@@ -1,71 +1,31 @@
+// Task: Make HTTP request to the server at URL  https://memegen-link-examples-upleveled.netlify.app/ and get first 10 images
 import fs from 'node:fs';
-// Make HTTP request to the server at URL  https://memegen-link-examples-upleveled.netlify.app/
-import http from 'http';
-import https from 'https';
-import fetch from 'node-fetch';
 
+// Target URL
 const memeUrl = 'https://memegen-link-examples-upleveled.netlify.app/';
 
+// Implement the HTTP request to get HTML body as a string first and then its URLs
 async function getMemes() {
-  // Like the browser fetch API, the default method is GET
-  const response = await fetch(memeUrl);
-  const data = await response.text();
-  fs.writeFile('./test.txt', data, (err) => {
-    if (err) {
-      console.error(err);
-    } else {
-      // file written successfully
-    }
-  });
-  const pattern = /<img\s+src="(.+?)"\s+\/>/g;
-  const arr = data.matchAll(pattern);
-  const allMatches = Array.from(arr);
+  // HTTP request to meme page
+  const responseHtml = await fetch(memeUrl);
+  const htmlBody = await responseHtml.text(); // get whole HTML as string
+
+  const pattern = /<img\s+src="(.+?)"\s+\/>/g; // RegEx pattern that matches the image elements
+  const imageElement = htmlBody.matchAll(pattern); // returns iterable of the image elements
+  const allMatches = Array.from(imageElement); // convert iterable to array
+  // Loop over array and download each URLs content into .jpg file
   for (let i = 0; i < 10; i++) {
-    let firstTen = '';
-    firstTen += allMatches[i][1];
-    console.log(firstTen);
+    // Just for testing
+    // let firstTen = '';
+    // firstTen += allMatches[i][1];
+    // console.log(firstTen);
+
+    const responseMeme = await fetch(allMatches[i][1]); // download image at URL
+    const arrayBuffer = await responseMeme.arrayBuffer(); // convert to array buffer
+    const buffer = Buffer.from(arrayBuffer); // convert to buffer
+    let indexString = (i + 1).toString().padStart(2, '0'); // convert index to name for .jpg (e.g. 01.jpg)
+    let path = `./memes/${indexString}.jpg`;
+    await fs.promises.writeFile(path, buffer); // save each image into folder "memes"
   }
 }
-getMemes().catch(console.error);
-
-// HTTPS approach
-
-// https.get(url, (resp) => {
-//   let data = '';
-
-//   resp.on('data', (chunk) => {
-//     console.log('chunk:', String(chunk));
-//     data += chunk;
-//   });
-//   resp.on('end', () => {
-//     fs.writeFile('./test.txt', data, (err) => {
-//       if (err) {
-//         console.error(err);
-//       } else {
-//         // file written successfully
-//       }
-//     });
-//   });
-// });
-
-// Node-fetch module approach
-
-// const response = await fetch('url');
-// const body = await response.text();
-
-// console.log(body);
-
-// // Create a local server to receive data from
-// const server = http.createServer();
-
-// // Listen to the request event
-// server.on('request', (request, res) => {
-//   res.writeHead(200, { 'Content-Type': 'application/json' });
-//   res.end(
-//     JSON.stringify({
-//       data: 'Hello World!',
-//     }),
-//   );
-// });
-
-// server.listen(8000);
+getMemes().catch(console.error); // error catching
