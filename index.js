@@ -4,6 +4,9 @@ import fs from 'node:fs';
 // Target URL
 const memeUrl = 'https://memegen-link-examples-upleveled.netlify.app/';
 
+// Create "memes" folder
+fs.mkdirSync('./memes', { recursive: true });
+
 // Implement the HTTP request to get HTML body as a string first and then its URLs
 async function getMemes() {
   // HTTP request to meme page
